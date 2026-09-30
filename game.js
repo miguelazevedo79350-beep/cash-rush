@@ -53,7 +53,46 @@
     withdrawAllBtn: document.getElementById("withdrawAllBtn"),
     depositBtn: document.getElementById("depositBtn"),
     ballField: document.getElementById("ballField"),
+    cardNumber: document.getElementById("cardNumber"),
+    cardName: document.getElementById("cardName"),
+    cardExp: document.getElementById("cardExp"),
+    ibanValue: document.getElementById("ibanValue"),
   };
+
+  const CARD_KEY = "cash-rush-virtual-card";
+
+  function randDigits(n) {
+    let out = "";
+    for (let i = 0; i < n; i += 1) out += Math.floor(Math.random() * 10);
+    return out;
+  }
+
+  function formatCardNumber(digits) {
+    return digits.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
+  }
+
+  function formatIban(raw) {
+    return raw.replace(/(.{4})/g, "$1 ").trim();
+  }
+
+  function ensureVirtualCard() {
+    try {
+      const raw = localStorage.getItem(CARD_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch {
+      /* ignore */
+    }
+    const card = {
+      number: `4000${randDigits(12)}`,
+      iban: `FR76${randDigits(23)}`,
+      name: "JOUEUR CASH RUSH",
+      exp: "12/99",
+    };
+    localStorage.setItem(CARD_KEY, JSON.stringify(card));
+    return card;
+  }
+
+  const virtualCard = ensureVirtualCard();
 
   let adWatchTimer = null;
   const balls = [];
@@ -272,12 +311,16 @@
   function renderBank() {
     els.bankBalance.textContent = formatMoney(state.bank);
     els.bankTotal.textContent = formatMoney(state.bankWithdrawnTotal);
+    els.cardNumber.textContent = formatCardNumber(virtualCard.number);
+    els.cardName.textContent = virtualCard.name;
+    els.cardExp.textContent = virtualCard.exp;
+    els.ibanValue.textContent = formatIban(virtualCard.iban);
     els.withdrawBtn.disabled = state.money < 1;
     els.withdrawAllBtn.disabled = state.money < 1;
     els.depositBtn.disabled = state.bank < 1;
 
     if (!state.bankLog.length) {
-      els.bankLog.innerHTML = `<li>Aucun retrait pour l’instant — gagne puis clique <strong>Retirer</strong>.</li>`;
+      els.bankLog.innerHTML = `<li>Aucun retrait — gagne puis envoie vers la <strong>carte virtuelle</strong>.</li>`;
       return;
     }
 
@@ -303,8 +346,8 @@
     state.money -= value;
     state.bank += value;
     state.bankWithdrawnTotal += value;
-    pushBankLog(`Retrait virtuel <strong>${formatMoney(value)}</strong> → banque`);
-    els.hint.textContent = `${formatMoney(value)} envoyés à la banque virtuelle`;
+    pushBankLog(`Retrait fictif <strong>${formatMoney(value)}</strong> → carte virtuelle`);
+    els.hint.textContent = `${formatMoney(value)} sur la carte virtuelle (pas de vrai cash)`;
     els.withdrawAmount.value = "";
     render();
     save();

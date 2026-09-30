@@ -46,27 +46,49 @@
 
     <section class="shop bank-shop" aria-label="Banque virtuelle">
       <h2 class="shop-title">Banque virtuelle</h2>
-      <p class="shop-lead">Feeling « retrait » — <strong>aucun vrai cash</strong>. Ça reste dans le jeu.</p>
-      <div class="bank-panel">
-        <div class="bank-stats">
+      <p class="shop-lead">Carte &amp; IBAN <strong>fictifs</strong> — aucun vrai compte, aucune CB réelle, aucun cash-out.</p>
+
+      <article class="bank-card" id="bankCard" aria-label="Carte bancaire virtuelle">
+        <div class="bank-card-top">
+          <span class="bank-card-chip" aria-hidden="true"></span>
+          <span class="bank-card-badge">FICTIF</span>
+        </div>
+        <p class="bank-card-number" id="cardNumber">•••• •••• •••• ••••</p>
+        <div class="bank-card-bottom">
           <div>
-            <p class="balance-label">Compte bancaire</p>
-            <p class="bank-balance" id="bankBalance">$0</p>
+            <p class="bank-card-label">Titulaire</p>
+            <p class="bank-card-name" id="cardName">JOUEUR CASH RUSH</p>
           </div>
           <div>
-            <p class="balance-label">Total retiré</p>
+            <p class="bank-card-label">Exp.</p>
+            <p class="bank-card-exp" id="cardExp">12/99</p>
+          </div>
+        </div>
+        <p class="bank-card-balance-label">Solde carte virtuelle</p>
+        <p class="bank-card-balance" id="bankBalance">$0</p>
+      </article>
+
+      <div class="bank-panel">
+        <div class="iban-box">
+          <p class="bank-card-label">IBAN fictif</p>
+          <p class="iban-value" id="ibanValue">FR76 •••• •••• •••• •••• •••• •••</p>
+          <p class="iban-note">Généré localement pour le décor. Inutilisable en banque.</p>
+        </div>
+        <div class="bank-stats">
+          <div>
+            <p class="balance-label">Total retiré (virtuel)</p>
             <p class="bank-total" id="bankTotal">$0</p>
           </div>
         </div>
         <div class="bank-actions">
-          <label class="bank-label" for="withdrawAmount">Montant à retirer</label>
+          <label class="bank-label" for="withdrawAmount">Montant à envoyer sur la carte virtuelle</label>
           <div class="bank-row">
             <input type="number" id="withdrawAmount" class="bank-input" min="1" step="1" placeholder="Tout" />
             <button type="button" class="buy-btn" id="withdrawBtn">Retirer</button>
           </div>
           <div class="bank-row bank-row-secondary">
             <button type="button" class="ghost-btn" id="withdrawAllBtn">Tout retirer</button>
-            <button type="button" class="ghost-btn" id="depositBtn">Rapatrier (banque → solde)</button>
+            <button type="button" class="ghost-btn" id="depositBtn">Rapatrier (carte → solde)</button>
           </div>
         </div>
         <ul class="bank-log" id="bankLog"></ul>
