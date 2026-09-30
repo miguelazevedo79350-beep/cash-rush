@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cash Rush</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg" aria-hidden="true"></div>
+  <div class="glow glow-a" aria-hidden="true"></div>
+  <div class="glow glow-b" aria-hidden="true"></div>
+
+  <main class="app">
+    <header class="top">
+      <div class="brand">
+        <p class="brand-mark">CASH RUSH</p>
+        <p class="brand-sub">Argent virtuel · clic, investis, explose</p>
+      </div>
+      <div class="top-actions">
+        <button type="button" class="ghost-btn" id="adBoostBtn">Pub → x2</button>
+        <button type="button" class="ghost-btn" id="resetBtn" title="Recommencer">Reset</button>
+      </div>
+    </header>
+
+    <section class="hero-stage" aria-label="Caisse enregistreuse" data-skin="classic">
+      <p class="hint" id="hint">Clique pour encaisser</p>
+      <p class="boost-pill hidden" id="boostPill">Boost x2 actif</p>
+      <button type="button" class="cash-btn" id="cashBtn" aria-label="Gagner de l'argent">
+        <span class="cash-ring"></span>
+        <span class="cash-core">
+          <span class="cash-label">ENCAISSER</span>
+          <span class="cash-rate" id="clickPower">+$1</span>
+        </span>
+      </button>
+      <div class="balance-wrap">
+        <p class="balance-label">Solde virtuel</p>
+        <p class="balance" id="balance">$0</p>
+        <p class="income" id="income">$0 / sec</p>
+      </div>
+    </section>
+
+    <section class="shop bank-shop" aria-label="Banque virtuelle">
+      <h2 class="shop-title">Banque virtuelle</h2>
+      <p class="shop-lead">Feeling « retrait » — <strong>aucun vrai cash</strong>. Ça reste dans le jeu.</p>
+      <div class="bank-panel">
+        <div class="bank-stats">
+          <div>
+            <p class="balance-label">Compte bancaire</p>
+            <p class="bank-balance" id="bankBalance">$0</p>
+          </div>
+          <div>
+            <p class="balance-label">Total retiré</p>
+            <p class="bank-total" id="bankTotal">$0</p>
+          </div>
+        </div>
+        <div class="bank-actions">
+          <label class="bank-label" for="withdrawAmount">Montant à retirer</label>
+          <div class="bank-row">
+            <input type="number" id="withdrawAmount" class="bank-input" min="1" step="1" placeholder="Tout" />
+            <button type="button" class="buy-btn" id="withdrawBtn">Retirer</button>
+          </div>
+          <div class="bank-row bank-row-secondary">
+            <button type="button" class="ghost-btn" id="withdrawAllBtn">Tout retirer</button>
+            <button type="button" class="ghost-btn" id="depositBtn">Rapatrier (banque → solde)</button>
+          </div>
+        </div>
+        <ul class="bank-log" id="bankLog"></ul>
+      </div>
+    </section>
+
+    <section class="shop" aria-label="Boutique">
+      <h2 class="shop-title">Investissements</h2>
+      <p class="shop-lead">Achète des sources de revenus passifs (argent virtuel).</p>
+      <div class="upgrades" id="upgrades"></div>
+    </section>
+
+    <section class="shop skins-shop" aria-label="Skins">
+      <h2 class="shop-title">Skins</h2>
+      <p class="shop-lead">Cosmétiques payants — revenus créateur via Stripe/AdSense (hors jeu), pas de cash-out joueur.</p>
+      <p class="demo-note" id="demoNote">Mode démo : les achats sont simulés localement. Branche Stripe pour encaisser vraiment (toi = créateur).</p>
+      <div class="skins" id="skins"></div>
+    </section>
+
+    <aside class="ad-slot" id="adSlot" aria-label="Publicité">
+      <div class="ad-inner">
+        <p class="ad-kicker">Espace pub</p>
+        <p class="ad-copy">Remplace ceci par ton code AdSense / AdMob quand le jeu est hébergé en ligne.</p>
+        <p class="ad-earn" id="adStats">Revenus créateur (démo) : 0,00 €</p>
+      </div>
+    </aside>
+  </main>
+
+  <div class="modal hidden" id="adModal" role="dialog" aria-modal="true" aria-labelledby="adModalTitle">
+    <div class="modal-card">
+      <p class="ad-kicker">Pub récompensée</p>
+      <h2 id="adModalTitle">Regarde 5 secondes</h2>
+      <p class="modal-text">En vrai, ici tu branches une pub vidéo (AdMob / AdSense). Le joueur gagne un boost x2 — toi, tu gagnes de la pub.</p>
+      <div class="ad-progress"><span id="adProgressBar"></span></div>
+      <p class="modal-timer" id="adTimer">5</p>
+      <button type="button" class="ghost-btn" id="adSkipBtn">Annuler</button>
+    </div>
+  </div>
+
+  <div class="float-layer" id="floatLayer" aria-hidden="true"></div>
+  <script src="monetization.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
