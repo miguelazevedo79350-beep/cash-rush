@@ -52,9 +52,124 @@
     withdrawBtn: document.getElementById("withdrawBtn"),
     withdrawAllBtn: document.getElementById("withdrawAllBtn"),
     depositBtn: document.getElementById("depositBtn"),
+    ballField: document.getElementById("ballField"),
   };
 
   let adWatchTimer = null;
+  const balls = [];
+  let ballSpawnAcc = 0;
+
+  const BALL_TYPES = [
+    { kind: "gold", mult: 3, weight: 55 },
+    { kind: "mint", mult: 6, weight: 30 },
+    { kind: "ruby", mult: 12, weight: 15 },
+  ];
+
+  function pickBallType() {
+    const total = BALL_TYPES.reduce((s, t) => s + t.weight, 0);
+    let roll = Math.random() * total;
+    for (const type of BALL_TYPES) {
+      roll -= type.weight;
+      if (roll <= 0) return type;
+    }
+    return BALL_TYPES[0];
+  }
+
+  function ballReward(type) {
+    const base = Math.max(1, clickPower());
+    return Math.max(1, Math.floor(base * type.mult * (0.8 + Math.random() * 0.5)));
+  }
+
+  function spawnBall() {
+    if (!els.ballField || balls.length >= 14) return;
+    const type = pickBallType();
+    const size = 28 + Math.random() * 22;
+    const el = document.createElement("button");
+    el.type = "button";
+    el.className = `fall-ball fall-ball--${type.kind}`;
+    el.setAttribute("aria-label", "Attraper une boule");
+    el.style.width = `${size}px`;
+    el.style.height = `${size}px`;
+    el.style.left = "0px";
+    el.style.top = "0px";
+
+    const fieldW = els.ballField.clientWidth || window.innerWidth;
+    const ball = {
+      el,
+      type,
+      x: (0.08 + Math.random() * 0.84) * fieldW,
+      y: -size - 10,
+      vy: 90 + Math.random() * 140,
+      vx: (Math.random() - 0.5) * 40,
+      rot: Math.random() * 360,
+      vr: (Math.random() - 0.5) * 180,
+      size,
+      alive: true,
+    };
+
+    el.style.transform = `translate(${ball.x}px, ${ball.y}px) rotate(${ball.rot}deg)`;
+    els.ballField.appendChild(el);
+
+    el.addEventListener("pointerdown", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      catchBall(ball, event.clientX, event.clientY);
+    });
+
+    balls.push(ball);
+  }
+
+  function removeBall(ball) {
+    ball.alive = false;
+    ball.el.remove();
+    const idx = balls.indexOf(ball);
+    if (idx >= 0) balls.splice(idx, 1);
+  }
+
+  function catchBall(ball, x, y) {
+    if (!ball.alive) return;
+    const gain = ballReward(ball.type);
+    addMoney(gain);
+    spawnFloater(x, y, `+$${Math.floor(gain)}`);
+    ball.el.classList.add("is-pop");
+    setTimeout(() => removeBall(ball), 120);
+    els.balance.textContent = formatMoney(state.money);
+    els.clickPower.textContent = `+$${Math.floor(clickPower()).toLocaleString("fr-FR")}`;
+    save();
+  }
+
+  function updateBalls(dt) {
+    const fieldH = els.ballField.clientHeight || window.innerHeight;
+    const fieldW = els.ballField.clientWidth || window.innerWidth;
+
+    ballSpawnAcc += dt;
+    const spawnEvery = Math.max(0.35, 1.1 - Math.min(0.6, incomePerSecond() / 2000));
+    while (ballSpawnAcc >= spawnEvery) {
+      ballSpawnAcc -= spawnEvery;
+      spawnBall();
+    }
+
+    for (let i = balls.length - 1; i >= 0; i -= 1) {
+      const ball = balls[i];
+      if (!ball.alive) continue;
+      ball.vy += 120 * dt;
+      ball.y += ball.vy * dt;
+      ball.x += ball.vx * dt;
+      ball.rot += ball.vr * dt;
+
+      if (ball.x < 0) {
+        ball.x = 0;
+        ball.vx *= -0.6;
+      } else if (ball.x > fieldW - ball.size) {
+        ball.x = fieldW - ball.size;
+        ball.vx *= -0.6;
+      }
+
+      ball.el.style.transform = `translate(${ball.x}px, ${ball.y}px) rotate(${ball.rot}deg)`;
+
+      if (ball.y > fieldH + 40) removeBall(ball);
+    }
+  }
 
   function formatMoney(value) {
     const n = Math.floor(value);
@@ -472,7 +587,7 @@
     state.owned = Object.fromEntries(upgradesDef.map((u) => [u.id, 0]));
     state.boostUntil = 0;
     state.adCooldownUntil = 0;
-    els.hint.textContent = "Clique pour encaisser";
+    els.hint.textContent = "Clique le bouton ou attrape les boules";
     render();
     save();
   });
@@ -487,6 +602,7 @@
       els.balance.textContent = formatMoney(state.money);
       els.income.textContent = formatRate(income);
     }
+    updateBalls(dt);
     renderBoostUi();
     requestAnimationFrame(tick);
   }

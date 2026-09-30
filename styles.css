@@ -34,6 +34,57 @@ body {
   overflow-x: hidden;
 }
 
+.ball-field {
+  position: fixed;
+  inset: 0;
+  z-index: 15;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.fall-ball {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 0;
+  border-radius: 50%;
+  pointer-events: auto;
+  cursor: pointer;
+  padding: 0;
+  transform: translate(-100px, -100px);
+  will-change: transform;
+  box-shadow:
+    inset -6px -8px 14px rgba(0, 0, 0, 0.28),
+    inset 5px 6px 10px rgba(255, 255, 255, 0.35),
+    0 8px 18px rgba(0, 0, 0, 0.35);
+  transition: filter 0.12s ease, opacity 0.12s ease;
+  touch-action: manipulation;
+}
+
+.fall-ball:hover {
+  filter: brightness(1.12) saturate(1.1);
+}
+
+.fall-ball.is-pop {
+  opacity: 0;
+  filter: brightness(1.4);
+}
+
+.fall-ball--gold {
+  background:
+    radial-gradient(circle at 32% 28%, #fff3b0 0%, #f0c24b 42%, #a87410 100%);
+}
+
+.fall-ball--mint {
+  background:
+    radial-gradient(circle at 32% 28%, #d8ffe8 0%, #3dff9a 45%, #13965a 100%);
+}
+
+.fall-ball--ruby {
+  background:
+    radial-gradient(circle at 32% 28%, #ffd0d0 0%, #ff5d6c 45%, #9a1430 100%);
+}
+
 .bg {
   position: fixed;
   inset: 0;
